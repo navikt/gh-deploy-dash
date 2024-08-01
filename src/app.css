@@ -1,0 +1,7 @@
+.repoLink {
+	text-decoration: none;
+	color: inherit;
+}
+.repoLink:hover {
+	text-decoration: underline;
+}
