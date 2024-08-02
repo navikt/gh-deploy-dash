@@ -1,7 +1,9 @@
 import { getDeployments } from '$lib/ghapi/index.js';
-import type { PageLoad } from './$types';
+import { fail } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-export const load: PageLoad = ({ params, cookies }) => {
+export const load: PageServerLoad = ({ params, cookies }) => {
 	const token = cookies.get('userToken');
-	return getDeployments(params.team, token);
+	if (!token) fail(401);
+	else return getDeployments(params.team, token);
 };

@@ -5,6 +5,7 @@ A simple dashboard to show current and pending deployments in github actions for
 ## Development
 
 Getting started:
+
 ```
 bun install
 bun codegen

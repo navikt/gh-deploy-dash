@@ -83,7 +83,9 @@ export const getDeployments = async (team: string, token: string) => {
 		.filter((a) => a !== null);
 
 	reposWithDeployments?.sort(
-		(a, b) => new Date(b.commit.committedDate) - new Date(a.commit.committedDate)
+		(a, b) =>
+			new Date(b.commit.committedDate as string).getTime() -
+			new Date(a.commit.committedDate as string).getTime()
 	);
 
 	return { repositories: reposWithDeployments, team };
@@ -110,7 +112,9 @@ const BLIST_TEAMS = ['nav-it-github-users'];
 export const getTeams = async (token: string) => {
 	const res = await executeGraphql({ token }, teamsQuery);
 
-	return res?.data.organization?.teams?.nodes?.filter(
+	const teams = res?.data.organization?.teams?.nodes?.filter(
 		(t) => t?.slug && !BLIST_TEAMS.includes(t?.slug)
 	);
+
+	return teams?.filter((t) => t !== null);
 };

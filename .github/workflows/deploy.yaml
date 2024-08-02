@@ -1,46 +1,46 @@
 name: Build & deploy to GCP
 
 on:
-    push:
-        branches: [master]
+  push:
+    branches: [master]
 
 env:
-    CI: true
-    TZ: Europe/Oslo
+  CI: true
+  TZ: Europe/Oslo
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
-        permissions:
-            packages: write
-            contents: read
-            id-token: write
-        outputs:
-            image: ${{ steps.docker-build-push.outputs.image }}
-        steps:
-            - uses: actions/checkout@v4
-            - name: Publish Docker image
-              uses: nais/docker-build-push@v0
-              id: docker-build-push
-              with:
-                team: personoversikt
-                identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-                project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish Docker image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: personoversikt
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
-    deploy:
-        name: Deploy to dev-gcp
-        needs: build
-        environment: dev-gcp
-        runs-on: ubuntu-latest
-        permissions:
-          contents: read
-          id-token: write
-        steps:
-            - uses: actions/checkout@v4
-            - uses: nais/deploy/actions/deploy@v2
-              env:
-                  PRINT_PAYLOAD: true
-                  CLUSTER: dev-gcp
-                  RESOURCE: .nais/dev.yaml
-                  VAR: image=${{ needs.build.outputs.image }}
+  deploy:
+    name: Deploy to dev-gcp
+    needs: build
+    environment: dev-gcp
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          PRINT_PAYLOAD: true
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/dev.yaml
+          VAR: image=${{ needs.build.outputs.image }}
