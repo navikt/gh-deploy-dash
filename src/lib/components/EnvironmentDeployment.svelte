@@ -16,7 +16,7 @@
 		)}/{deployment.environment}/app/{repository}"
 		><span class="environment">{deployment.environment}</span></a
 	>
-	<span class={`status status-${deployment.state.toLowerCase()}`}>
+	<span class={`status status-${deployment.state?.toLowerCase()}`}>
 		{#if deployment.waiting}
 			<a class="repoLink" href={deployment.url.replace(/\/job\/.*/, '')}>{deployment.state}</a>
 		{:else}
@@ -30,6 +30,7 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 6em;
+		gap: 0.5em;
 		justify-items: center;
 		align-items: center;
 	}

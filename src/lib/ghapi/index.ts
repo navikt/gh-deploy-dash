@@ -92,3 +92,25 @@ export const getDeployments = async (team: string, token: string) => {
 export type RepoDeployments = NonNullable<
 	Awaited<ReturnType<typeof getDeployments>>['repositories']
 >;
+
+const teamsQuery = graphql(`
+	query teams {
+		organization(login: "navikt") {
+			teams(role: MEMBER, first: 10) {
+				nodes {
+					slug
+				}
+			}
+		}
+	}
+`);
+
+const BLIST_TEAMS = ['nav-it-github-users'];
+
+export const getTeams = async (token: string) => {
+	const res = await executeGraphql({ token }, teamsQuery);
+
+	return res?.data.organization?.teams?.nodes?.filter(
+		(t) => t?.slug && !BLIST_TEAMS.includes(t?.slug)
+	);
+};

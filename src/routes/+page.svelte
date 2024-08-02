@@ -1,2 +1,12 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { goto } from '$app/navigation';
+</script>
+
+<h1>Github deploy dashboard</h1>
+
+<button
+	on:click={(e) => {
+		e.preventDefault();
+		goto('/api/github/oauth/login');
+	}}>Login with GitHub</button
+>

@@ -1,7 +1,8 @@
 import { getDeployments } from '$lib/ghapi/index.js';
 import type { PageLoad } from './$types';
-const TOKEN = process.env.GH_PAT;
 
-export const load: PageLoad = ({ params }) => {
-	return getDeployments(params.team, TOKEN);
+export const load: PageLoad = ({ params, cookies }) => {
+	const token = cookies.get('userToken');
+	console.log(token);
+	return getDeployments(params.team, token);
 };

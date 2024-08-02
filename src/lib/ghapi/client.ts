@@ -10,7 +10,7 @@ export const executeGraphql = async <Res, Vars>(
 		headers: {
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
-			Authorization: `token ${token}`
+			Authorization: `Bearer ${token}`
 		},
 		body: JSON.stringify({ query: query, variables })
 	});
