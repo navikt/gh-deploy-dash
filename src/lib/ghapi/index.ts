@@ -2,10 +2,15 @@ import { executeGraphql } from './client.js';
 import { graphql } from './generated/graphql/index.js';
 
 const repositoriesQuery = graphql(`
-	query repositories($team: String!) {
+	query repositories($team: String!, $cursor: String) {
 		organization(login: "navikt") {
 			team(slug: $team) {
-				repositories(first: 50) {
+				repositories(first: 30, after: $cursor, orderBy: { field: PUSHED_AT, direction: DESC }) {
+					pageInfo {
+						endCursor
+						hasNextPage
+					}
+					totalCount
 					nodes {
 						name
 						isArchived
@@ -47,10 +52,12 @@ const envOrder = (envString: string | null | undefined) => {
 	}
 };
 
-export const getDeployments = async (team: string, token: string) => {
-	const res = await executeGraphql({ token }, repositoriesQuery, { team });
+type Params = { team: string; cursor?: string };
+export const getDeployments = async (params: Params, token: string) => {
+	const res = await executeGraphql({ token }, repositoriesQuery, { team: params.team });
+	const repositories = res?.data.organization?.team?.repositories;
 
-	const repos = res?.data.organization?.team?.repositories.nodes?.filter(
+	const repos = repositories?.nodes?.filter(
 		(r) => !r?.isArchived && (r?.deployments.totalCount ?? 0) > 0
 	);
 
@@ -88,7 +95,10 @@ export const getDeployments = async (team: string, token: string) => {
 			new Date(a.commit.committedDate as string).getTime()
 	);
 
-	return { repositories: reposWithDeployments, team };
+	return {
+		repositories: reposWithDeployments,
+		team: params.team
+	};
 };
 
 export type RepoDeployments = NonNullable<
