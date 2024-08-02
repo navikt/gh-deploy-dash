@@ -26,7 +26,7 @@ spec:
       external:
         - host: api.github.com
   envFrom:
-    - secret: deploy-dash-gh-secret
+    - secret: gh-deploy-dash
   env:
     - name: NODE_ENV
       value: PRODUCTION
