@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  - push
+
+env:
+  CI: true
+  TZ: Europe/Oslo
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Codegen
+        run: bun run codegen
+      - name: Lint
+        run: bun run lint
+      - name: Svelte check
+        run: bun run check
+      - name: Build
+        run: bun run build
