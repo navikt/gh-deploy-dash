@@ -17,7 +17,11 @@
 		><span class="environment">{deployment.environment}</span></a
 	>
 	<span class={`status status-${deployment.state?.toLowerCase()}`}>
-		<a class="repoLink" href={deployment.url.replace(/\/job\/.*/, '')}>{deployment.state}</a>
+		{#if deployment.url}
+			<a class="repoLink" href={deployment.url.replace(/\/job\/.*/, '')}>{deployment.state}</a>
+		{:else}
+			{deployment.state}
+		{/if}
 	</span>
 </div>
 
