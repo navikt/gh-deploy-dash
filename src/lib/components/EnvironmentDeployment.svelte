@@ -52,4 +52,7 @@
 	.status-inactive {
 		background-color: #cccccc77;
 	}
+	.status-error {
+		background-color: #f68282;
+	}
 </style>
