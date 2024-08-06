@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { type RepoDeployments } from '$lib/ghapi';
+	import { getWorkflowFromDeploymentUrl } from '$lib/utils';
 	import { get } from 'svelte/store';
 
 	export let deployment: RepoDeployments[0]['states'][0];
 	export let repository: string;
 
 	import { team } from '$lib/stores/routing';
+	import Modal from './Modal.svelte';
+	import ReviewDeployments from './ReviewDeployments.svelte';
+	let showReviewModal = false;
 </script>
 
 <div class="deployment">
@@ -23,9 +27,26 @@
 			{deployment.state}
 		{/if}
 	</span>
+	<div class="buttonRow">
+		{#if deployment.state === 'WAITING'}
+			<button on:click={() => (showReviewModal = true)}>Review deployment</button>
+			<Modal bind:showModal={showReviewModal}>
+				<h2 slot="header">Review deployment</h2>
+				<ReviewDeployments
+					repo={repository}
+					owner="navikt"
+					workflow={Number(getWorkflowFromDeploymentUrl(deployment.url))}
+					success={() => (showReviewModal = false)}
+				/>
+			</Modal>
+		{/if}
+	</div>
 </div>
 
 <style>
+	.buttonRow {
+		min-height: 2em;
+	}
 	.deployment {
 		display: flex;
 		flex-direction: column;

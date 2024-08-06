@@ -5,3 +5,9 @@
 .repoLink:hover {
 	text-decoration: underline;
 }
+
+body {
+	font-family: 'Inter', sans-serif;
+	font-optical-sizing: auto;
+	font-style: normal;
+}

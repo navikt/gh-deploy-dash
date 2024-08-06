@@ -10,7 +10,7 @@ export const executeGraphql = async <Res, Vars>(
 		headers: {
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
-			Authorization: `Bearer ${token}`
+			Authorization: import.meta.env.DEV ? `token ${process.env.GH_PAT}` : `Bearer ${token}`
 		},
 		body: JSON.stringify({ query: query, variables })
 	});
