@@ -73,7 +73,12 @@
 	.status-inactive {
 		background-color: #cccccc77;
 	}
-	.status-error {
+	.status-error,
+	.status-failure {
 		background-color: #f68282;
+	}
+
+	.status-failure {
+		border-color: red;
 	}
 </style>
