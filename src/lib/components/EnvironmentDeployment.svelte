@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type RepoDeployments } from '$lib/ghapi';
+	import type { RepoDeployments } from '$lib/ghapi';
 	import { getWorkflowFromDeploymentUrl } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { PUBLIC_GITHUB_ORG } from '$env/static/public';

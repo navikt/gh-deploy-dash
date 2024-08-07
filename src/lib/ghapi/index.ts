@@ -132,3 +132,52 @@ export const getTeams = async (token: string) => {
 
 	return teams?.filter((t) => t !== null);
 };
+
+const releasesQuery = graphql(`
+	query releases($org: String!, $team: String!) {
+		organization(login: $org) {
+			team(slug: $team) {
+				repositories(first: 50, orderBy: { field: PUSHED_AT, direction: DESC }) {
+					nodes {
+						name
+						isArchived
+						latestRelease {
+							tagCommit {
+								oid
+								message
+								committedDate
+							}
+							tag {
+								name
+								compare(headRef: "master") {
+									behindBy
+								}
+							}
+						}
+						defaultBranchRef {
+							name
+							id
+						}
+					}
+				}
+			}
+		}
+	}
+`);
+
+export const getReleases = async (token: string, { team }: { team: string }) => {
+	const res = await executeGraphql({ token }, releasesQuery, { org: PUBLIC_GITHUB_ORG, team });
+	const repos = res?.data.organization?.team?.repositories.nodes;
+
+	const reposWithReleases = repos
+		?.filter((repo) => repo && !repo.isArchived && repo.latestRelease)
+		.map((r) => ({
+			...r,
+			title: r?.name,
+			commit: r?.latestRelease?.tagCommit
+		}));
+
+	return reposWithReleases;
+};
+
+export type RepoReleases = NonNullable<Awaited<ReturnType<typeof getReleases>>>;
