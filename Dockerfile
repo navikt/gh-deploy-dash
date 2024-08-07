@@ -18,6 +18,8 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+ARG PUBLIC_GITHUB_ORG
+ENV PUBLIC_GITHUB_ORG=${PUBLIC_GITHUB_ORG}
 ENV NODE_ENV=production
 RUN bun run codegen
 RUN bun run build

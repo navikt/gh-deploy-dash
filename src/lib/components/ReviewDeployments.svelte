@@ -2,12 +2,14 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { env } from '$env/dynamic/public';
 	import Cookies from 'js-cookie';
-	import { Octokit } from 'octokit';
+	import { Octokit, RequestError } from 'octokit';
 
 	export let owner: string;
 	export let repo: string;
 	export let workflow: number;
 	export let success: () => void;
+
+	let errorMsg: string | undefined;
 
 	const octokit = new Octokit({
 		auth: import.meta.env.DEV ? env.PUBLIC_GH_PAT : Cookies.get('userToken')
@@ -30,17 +32,21 @@
 		const env_ids = Object.entries(envs)
 			.map(([id, selected]) => (selected ? Number(id) : null))
 			.filter((id) => id !== null);
-		const res = await octokit.rest.actions.reviewPendingDeploymentsForRun({
-			owner,
-			repo,
-			run_id: workflow,
-			environment_ids: env_ids,
-			state: reject ? 'rejected' : 'approved',
-			comment: comment
-		});
+		try {
+			const res = await octokit.rest.actions.reviewPendingDeploymentsForRun({
+				owner,
+				repo,
+				run_id: workflow,
+				environment_ids: env_ids,
+				state: reject ? 'rejected' : 'approved',
+				comment: comment
+			});
 
-		if (res.status === 200) {
-			success();
+			if (res.status === 200) {
+				success();
+			}
+		} catch (error) {
+			if (error instanceof RequestError) errorMsg = error.message;
 		}
 	};
 </script>
@@ -71,6 +77,12 @@
 			<label for="comment">Comment</label>
 			<textarea id="comment" bind:value={comment}></textarea>
 		</div>
+		{#if errorMsg}
+			<div>
+				Error: <br />
+				{errorMsg}
+			</div>
+		{/if}
 		<div class="buttonRow">
 			<button class="approve" on:click|preventDefault={() => approveDeployments()}>Approve</button>
 			<button class="reject" on:click|preventDefault={() => approveDeployments(false)}

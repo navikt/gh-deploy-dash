@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { PUBLIC_GITHUB_ORG } from '$env/static/public';
 
 	export let data: PageData;
 </script>
@@ -9,7 +10,7 @@
 <ul>
 	{#if !data.teams || data.teams.length === 0}
 		<span>
-			Fant ingen team i organisasjonen. Pass på at du har gitt github appen tilgang til navikt
+			Fant ingen team i organisasjonen. Pass på at du har gitt github appen tilgang til {PUBLIC_GITHUB_ORG}
 			organisasjonen.
 		</span>
 	{:else}

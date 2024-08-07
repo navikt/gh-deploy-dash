@@ -1,9 +1,10 @@
 import { executeGraphql } from './client.js';
+import { PUBLIC_GITHUB_ORG } from '$env/static/public';
 import { graphql } from './generated/graphql/index.js';
 
 const repositoriesQuery = graphql(`
-	query repositories($team: String!, $cursor: String) {
-		organization(login: "navikt") {
+	query repositories($org: String!, $team: String!, $cursor: String) {
+		organization(login: $org) {
 			team(slug: $team) {
 				repositories(first: 30, after: $cursor, orderBy: { field: PUSHED_AT, direction: DESC }) {
 					pageInfo {
@@ -54,7 +55,10 @@ const envOrder = (envString: string | null | undefined) => {
 
 type Params = { team: string; cursor?: string };
 export const getDeployments = async (params: Params, token: string) => {
-	const res = await executeGraphql({ token }, repositoriesQuery, { team: params.team });
+	const res = await executeGraphql({ token }, repositoriesQuery, {
+		team: params.team,
+		org: PUBLIC_GITHUB_ORG
+	});
 	const repositories = res?.data.organization?.team?.repositories;
 
 	const repos = repositories?.nodes?.filter(
@@ -106,8 +110,8 @@ export type RepoDeployments = NonNullable<
 >;
 
 const teamsQuery = graphql(`
-	query teams {
-		organization(login: "navikt") {
+	query teams($org: String!) {
+		organization(login: $org) {
 			teams(role: MEMBER, first: 10) {
 				nodes {
 					slug
@@ -120,7 +124,7 @@ const teamsQuery = graphql(`
 const BLIST_TEAMS = ['nav-it-github-users'];
 
 export const getTeams = async (token: string) => {
-	const res = await executeGraphql({ token }, teamsQuery);
+	const res = await executeGraphql({ token }, teamsQuery, { org: PUBLIC_GITHUB_ORG });
 
 	const teams = res?.data.organization?.teams?.nodes?.filter(
 		(t) => t?.slug && !BLIST_TEAMS.includes(t?.slug)

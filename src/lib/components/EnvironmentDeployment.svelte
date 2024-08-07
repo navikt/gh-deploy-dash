@@ -2,6 +2,7 @@
 	import { type RepoDeployments } from '$lib/ghapi';
 	import { getWorkflowFromDeploymentUrl } from '$lib/utils';
 	import { get } from 'svelte/store';
+	import { PUBLIC_GITHUB_ORG } from '$env/static/public';
 
 	export let deployment: RepoDeployments[0]['states'][0];
 	export let repository: string;
@@ -34,7 +35,7 @@
 				<h2 slot="header">Review deployment</h2>
 				<ReviewDeployments
 					repo={repository}
-					owner="navikt"
+					owner={PUBLIC_GITHUB_ORG}
 					workflow={Number(getWorkflowFromDeploymentUrl(deployment.url))}
 					success={() => (showReviewModal = false)}
 				/>

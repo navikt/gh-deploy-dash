@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type RepoDeployments } from '$lib/ghapi';
+	import { PUBLIC_GITHUB_ORG } from '$env/static/public';
 	import EnvironmentDeployment from './EnvironmentDeployment.svelte';
 
 	import { formatDistanceToNow } from 'date-fns';
@@ -12,7 +13,7 @@
 <div class="card" class:pending>
 	<a
 		class="repoLink"
-		href="https://github.com/navikt/{repo.title}"
+		href="https://github.com/{PUBLIC_GITHUB_ORG}/{repo.title}"
 		target="_blank"
 		rel="noreferrer"
 	>
