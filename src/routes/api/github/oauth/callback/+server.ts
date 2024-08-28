@@ -9,7 +9,11 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	if (state && code) {
 		const { authentication } = await octokitApp.createToken({ code, state });
 
-		cookies.set('userToken', authentication.token, { sameSite: 'strict', path: '/' });
+		cookies.set('userToken', authentication.token, {
+			sameSite: 'strict',
+			path: '/',
+			httpOnly: false
+		});
 		redirect(303, '/team');
 	} else {
 		fail(400, { msg: 'Invalid state or code returned from callback' });
