@@ -6,6 +6,8 @@
 
 	export let deployment: RepoDeployments[0]['states'][0];
 	export let repository: string;
+	export let errorMsg: string | undefined;
+	export let isSuccess: boolean | undefined;
 
 	import { team } from '$lib/stores/routing';
 	import Modal from './Modal.svelte';
@@ -38,6 +40,9 @@
 					owner={PUBLIC_GITHUB_ORG}
 					workflow={Number(getWorkflowFromDeploymentUrl(deployment.url))}
 					success={() => (showReviewModal = false)}
+					bind:isMounted={showReviewModal}
+					{isSuccess}
+					{errorMsg}
 				/>
 			</Modal>
 		{/if}

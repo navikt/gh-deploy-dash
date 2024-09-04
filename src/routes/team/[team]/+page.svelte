@@ -1,9 +1,10 @@
 <script lang="ts">
 	import RepoDeployments from '$lib/components/RepoDeployments.svelte';
-	import type { PageData } from './$types';
+	import type { PageData, ActionData } from './$types';
 	import { team } from '$lib/stores/routing';
 
 	export let data: PageData;
+	export let form: ActionData;
 
 	team.set(data.team);
 </script>
@@ -17,7 +18,7 @@
 		<ul class="repoList">
 			{#each data.repositories as repo}
 				<li>
-					<RepoDeployments {repo} />
+					<RepoDeployments {repo} isSuccess={!!form?.success} errorMsg={form?.errorMsg} />
 				</li>
 			{/each}
 		</ul>
