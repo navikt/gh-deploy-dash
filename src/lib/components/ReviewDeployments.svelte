@@ -1,20 +1,25 @@
 <script lang="ts">
 	import { createQuery } from '@tanstack/svelte-query';
 	import { env } from '$env/dynamic/public';
+	import { enhance } from '$app/forms';
 	import Cookies from 'js-cookie';
-	import { Octokit, RequestError } from 'octokit';
+	import { Octokit } from 'octokit';
 
 	export let owner: string;
 	export let repo: string;
 	export let workflow: number;
 	export let success: () => void;
+	export let isMounted: boolean;
+	export let errorMsg: string | undefined;
+	export let isSuccess: boolean | undefined;
 
-	let errorMsg: string | undefined;
+	$: if (isSuccess) success();
 
 	const octokit = new Octokit({
 		auth: import.meta.env.DEV ? env.PUBLIC_GH_PAT : Cookies.get('userToken')
 	});
-	const deploymentsQuery = createQuery({
+
+	$: deploymentsQuery = createQuery({
 		queryKey: ['deployments', owner, repo, workflow],
 		queryFn: async () =>
 			(
@@ -23,32 +28,9 @@
 					repo,
 					run_id: workflow
 				})
-			).data
+			).data,
+		enabled: isMounted
 	});
-
-	let envs: Record<number, boolean> = {};
-	let comment: string = '';
-	const approveDeployments = async (reject = false) => {
-		const env_ids = Object.entries(envs)
-			.map(([id, selected]) => (selected ? Number(id) : null))
-			.filter((id) => id !== null);
-		try {
-			const res = await octokit.rest.actions.reviewPendingDeploymentsForRun({
-				owner,
-				repo,
-				run_id: workflow,
-				environment_ids: env_ids,
-				state: reject ? 'rejected' : 'approved',
-				comment: comment
-			});
-
-			if (res.status === 200) {
-				success();
-			}
-		} catch (error) {
-			if (error instanceof RequestError) errorMsg = error.message;
-		}
-	};
 </script>
 
 <div>
@@ -57,38 +39,41 @@
 	{:else if $deploymentsQuery.isError}
 		<p>Could not retrieve deployments from GitHub</p>
 	{:else if $deploymentsQuery.isSuccess}
-		<fieldset name="Environments">
-			{#each $deploymentsQuery.data as deployment}
-				{#if deployment.environment.id}
-					<div>
-						<input
-							name="environment"
-							type="checkbox"
-							value={deployment.environment.id}
-							bind:checked={envs[deployment.environment.id]}
-							id={deployment.environment.name}
-						/>
-						<label for={deployment.environment.name}>{deployment.environment.name}</label>
-					</div>
-				{/if}
-			{/each}
-		</fieldset>
-		<div class="comment">
-			<label for="comment">Comment</label>
-			<textarea id="comment" bind:value={comment}></textarea>
-		</div>
-		{#if errorMsg}
-			<div>
-				Error: <br />
-				{errorMsg}
+		<form method="POST" action="?/reviewdeployment" use:enhance>
+			<input type="hidden" id="owner" name="owner" value={owner} />
+			<input type="hidden" id="repo" name="repo" value={repo} />
+			<input type="hidden" id="run_id" name="run_id" value={workflow} />
+
+			<fieldset name="Environments">
+				{#each $deploymentsQuery.data as deployment}
+					{#if deployment.environment.id}
+						<div>
+							<input
+								name="environment"
+								type="checkbox"
+								value={deployment.environment.id}
+								id={deployment.environment.name}
+							/>
+							<label for={deployment.environment.name}>{deployment.environment.name}</label>
+						</div>
+					{/if}
+				{/each}
+			</fieldset>
+			<div class="comment">
+				<label for="comment">Comment</label>
+				<textarea name="comment"></textarea>
 			</div>
-		{/if}
-		<div class="buttonRow">
-			<button class="approve" on:click|preventDefault={() => approveDeployments()}>Approve</button>
-			<button class="reject" on:click|preventDefault={() => approveDeployments(false)}
-				>Reject</button
-			>
-		</div>
+			{#if errorMsg}
+				<div>
+					Error: <br />
+					{errorMsg}
+				</div>
+			{/if}
+			<div class="buttonRow">
+				<button class="approve" name="state" value="approved">Approve</button>
+				<button class="reject" name="state" value="rejected">Reject</button>
+			</div>
+		</form>
 	{/if}
 </div>
 
