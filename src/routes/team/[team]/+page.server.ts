@@ -2,7 +2,7 @@ import { getDeployments } from '$lib/ghapi/index.js';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Octokit, RequestError } from 'octokit';
-import { GH_PAT } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = ({ url, params, cookies }) => {
 	const token = cookies.get('userToken');
@@ -31,7 +31,7 @@ export const actions = {
 		const env_ids = enviroment.map((e) => Number(e));
 
 		const octokit = new Octokit({
-			auth: import.meta.env.DEV ? GH_PAT : token
+			auth: import.meta.env.DEV ? env.GH_PAT : token
 		});
 
 		let errorMsg: string | undefined;
