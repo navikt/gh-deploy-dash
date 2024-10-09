@@ -6,8 +6,6 @@
 	import { formatDistanceToNow } from 'date-fns';
 
 	export let repo: RepoDeployments[0];
-	export let isSuccess: boolean;
-	export let errorMsg: string | undefined;
 
 	const pending = repo.states.some((s) => s.waiting);
 </script>
@@ -29,7 +27,7 @@
 			<code>{repo.commit?.message}</code>
 		</div>
 		{#each repo.states as deployment}
-			<EnvironmentDeployment {deployment} repository={repo.title} bind:errorMsg bind:isSuccess />
+			<EnvironmentDeployment {deployment} repository={repo.title} />
 		{/each}
 	</div>
 </div>
