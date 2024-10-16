@@ -25,12 +25,11 @@ RUN bun run codegen
 RUN bun run build
 
 # copy production dependencies and source code into final image
-FROM base AS release
+FROM oven/bun:1-distroless AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/build ./build
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
-USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "build/index.js" ]
+CMD ["run", "build/index.js"]
