@@ -11,6 +11,9 @@ RUN cd /temp/dev && bun install --frozen-lockfile
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
+# Some dev-deps are sneaking in for some reason.
+# Remove the ones that pollute the SBOM with vulnerabilities
+RUN rm -r /temp/prod/node_modules/esbuild
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
