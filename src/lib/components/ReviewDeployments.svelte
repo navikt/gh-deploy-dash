@@ -4,6 +4,7 @@
 	import { enhance } from '$app/forms';
 	import Cookies from 'js-cookie';
 	import { Octokit } from 'octokit';
+	import { Alert } from '@nais/ds-svelte-community';
 
 	export let owner: string;
 	export let repo: string;
@@ -39,13 +40,23 @@
 	{:else if $deploymentsQuery.isError}
 		<p>Could not retrieve deployments from GitHub</p>
 	{:else if $deploymentsQuery.isSuccess}
-		<form method="POST" action="?/reviewdeployment" use:enhance>
+		<form
+			method="POST"
+			action="?/reviewdeployment"
+			use:enhance={() => {
+				return async ({ result }) => {
+					if (result.type === 'success') {
+						window.location.reload();
+					}
+				};
+			}}
+		>
 			<input type="hidden" id="owner" name="owner" value={owner} />
 			<input type="hidden" id="repo" name="repo" value={repo} />
 			<input type="hidden" id="run_id" name="run_id" value={workflow} />
 
 			<fieldset name="Environments">
-				{#each $deploymentsQuery.data as deployment}
+				{#each $deploymentsQuery.data as deployment (deployment.environment.id)}
 					{#if deployment.environment.id}
 						<div>
 							<input
@@ -64,10 +75,9 @@
 				<textarea name="comment"></textarea>
 			</div>
 			{#if errorMsg}
-				<div>
-					Error: <br />
+				<Alert variant="error" size="small">
 					{errorMsg}
-				</div>
+				</Alert>
 			{/if}
 			<div class="buttonRow">
 				<button class="approve" name="state" value="approved">Approve</button>

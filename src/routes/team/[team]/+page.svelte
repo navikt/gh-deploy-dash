@@ -9,15 +9,15 @@
 	team.set(data.team);
 </script>
 
-<h1>Team {data.team} deployments</h1>
+<h1 class="header">Team {data.team} deployments</h1>
 
 <div>
 	{#if !data.repositories}
 		<p>No repositories with deployments found</p>
 	{:else}
 		<ul class="repoList">
-			{#each data.repositories as repo}
-				<li>
+			{#each data.repositories as repo (repo.title)}
+				<li class="list-element">
 					<RepoDeployments {repo} isSuccess={!!form?.success} errorMsg={form?.errorMsg} />
 				</li>
 			{/each}
@@ -26,7 +26,15 @@
 </div>
 
 <style>
+	.header {
+		margin-inline: 1em;
+	}
 	.repoList {
 		list-style: none;
+		margin: 2em;
+		padding: 0;
+	}
+	.list-element {
+		margin-block: 1em;
 	}
 </style>

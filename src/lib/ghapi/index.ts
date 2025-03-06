@@ -1,6 +1,7 @@
-import { executeGraphql } from './client.js';
+import { GH_TEAMS_BLIST } from '$env/static/private';
 import { PUBLIC_GITHUB_ORG } from '$env/static/public';
-import { graphql } from './generated/graphql/index.js';
+import { executeGraphql } from './client';
+import { graphql } from './generated/graphql/index';
 
 const repositoriesQuery = graphql(`
 	query repositories($org: String!, $team: String!, $cursor: String) {
@@ -121,14 +122,16 @@ const teamsQuery = graphql(`
 	}
 `);
 
-const BLIST_TEAMS = ['nav-it-github-users'];
+const BLIST_TEAMS = GH_TEAMS_BLIST.split(',');
 
 export const getTeams = async (token: string) => {
-	const res = await executeGraphql({ token }, teamsQuery, { org: PUBLIC_GITHUB_ORG });
+	const res = await executeGraphql({ token }, teamsQuery, {
+		org: PUBLIC_GITHUB_ORG
+	});
 
 	const teams = res?.data.organization?.teams?.nodes?.filter(
 		(t) => t?.slug && !BLIST_TEAMS.includes(t?.slug)
 	);
 
-	return teams?.filter((t) => t !== null);
+	return { teams: teams?.filter((t) => t !== null), errors: res?.errors };
 };

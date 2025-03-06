@@ -1,8 +1,10 @@
-import { getDeployments } from '$lib/ghapi/index.js';
-import { fail } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
-import { Octokit, RequestError } from 'octokit';
 import { env } from '$env/dynamic/private';
+import { GH_CLIENT_ID, GH_CLIENT_SECRET } from '$env/static/private';
+import { getDeployments } from '$lib/ghapi/index.js';
+import { createOAuthUserAuth } from '@octokit/auth-oauth-app';
+import { fail } from '@sveltejs/kit';
+import { Octokit, RequestError } from 'octokit';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ url, params, cookies }) => {
 	const token = cookies.get('userToken');
@@ -30,10 +32,19 @@ export const actions = {
 
 		const env_ids = enviroment.map((e) => Number(e));
 
-		const octokit = new Octokit({
-			auth: import.meta.env.DEV ? env.GH_PAT : token
-		});
-
+		const octokit = import.meta.env.DEV
+			? new Octokit({
+					auth: import.meta.env.DEV ? env.GH_PAT : token
+				})
+			: new Octokit({
+					authStrategy: createOAuthUserAuth,
+					auth: {
+						clientId: GH_CLIENT_ID,
+						clientSecret: GH_CLIENT_SECRET,
+						clientType: 'oauth-app',
+						token
+					}
+				});
 		let errorMsg: string | undefined;
 		let success = false;
 

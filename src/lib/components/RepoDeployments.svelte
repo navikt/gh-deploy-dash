@@ -14,12 +14,12 @@
 
 <div class="card" class:pending>
 	<a
-		class="repoLink"
+		class="repoLink unstyled"
 		href="https://github.com/{PUBLIC_GITHUB_ORG}/{repo.title}"
 		target="_blank"
 		rel="noreferrer"
 	>
-		<h4>{repo.title}</h4>
+		<h4 class="title">{repo.title}</h4>
 	</a>
 	<div class="commitDeploy">
 		<div class="commitMsg">
@@ -28,7 +28,7 @@
 			</span>
 			<code>{repo.commit?.message}</code>
 		</div>
-		{#each repo.states as deployment}
+		{#each repo.states as deployment (deployment.createdAt)}
 			<EnvironmentDeployment {deployment} repository={repo.title} bind:errorMsg bind:isSuccess />
 		{/each}
 	</div>
@@ -36,12 +36,15 @@
 
 <style>
 	.card {
-		margin: 0.6em;
 		padding: 0 1em;
 		padding-bottom: 0.5em;
 		border: 1px solid #ccc;
 		border-radius: 0.1em;
 		box-shadow: 0 3px 10px #00000033;
+	}
+
+	.title {
+		margin: 0.5rem;
 	}
 
 	.pending {

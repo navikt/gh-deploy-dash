@@ -17,7 +17,7 @@
 
 <div class="deployment">
 	<a
-		class="repoLink"
+		class="unstyled repoLink"
 		href="https://console.nav.cloud.nais.io/team/{get(
 			team
 		)}/{deployment.environment}/app/{repository}"
@@ -25,7 +25,9 @@
 	>
 	<span class={`status status-${deployment.state?.toLowerCase()}`}>
 		{#if deployment.url}
-			<a class="repoLink" href={deployment.url.replace(/\/job\/.*/, '')}>{deployment.state}</a>
+			<a class="unstyled repoLink" target="_blank" href={deployment.url.replace(/\/job\/.*/, '')}
+				>{deployment.state}</a
+			>
 		{:else}
 			{deployment.state}
 		{/if}

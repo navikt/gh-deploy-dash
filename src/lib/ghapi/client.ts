@@ -1,3 +1,4 @@
+import type { GraphQlQueryResponse } from '@octokit/graphql/types';
 import type { TypedDocumentString } from './generated/graphql/graphql';
 
 export const executeGraphql = async <Res, Vars>(
@@ -16,9 +17,13 @@ export const executeGraphql = async <Res, Vars>(
 	});
 
 	if (!res.ok) {
+		console.error(`GH GraphQL req failed with status: ${res.status} ${res.statusText}`);
 		console.error(await res.text());
 		return undefined;
 	}
 
-	return (await res.json()) as { data: Res };
+	return (await res.json()) as {
+		data: Res;
+		errors: GraphQlQueryResponse<never>['errors'];
+	};
 };
