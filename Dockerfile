@@ -31,6 +31,10 @@ ARG GH_TEAMS_BLIST
 ENV PUBLIC_GITHUB_ORG=${PUBLIC_GITHUB_ORG}
 ENV GH_TEAMS_BLIST=${GH_TEAMS_BLIST}
 ENV NODE_ENV=production
+
+ENV PROTOCOL_HEADER=x-forwarded-proto
+ENV HOST_HEADER=x-forwarded-host
+
 RUN bun run codegen
 RUN bun run build
 
