@@ -6,11 +6,16 @@ WORKDIR /usr/src/app
 FROM base AS install
 RUN mkdir -p /temp/dev
 COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+
+RUN --mount=type=secret,id=bun_auth_token cd /temp/dev && \
+  BUN_AUTH_TOKEN=$(cat /run/secrets/bun_auth_token) \
+  bun install --frozen-lockfile
 
 RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+RUN --mount=type=secret,id=bun_auth_token cd /temp/prod && \
+  BUN_AUTH_TOKEN=$(cat /run/secrets/bun_auth_token) \
+  bun install --frozen-lockfile --production
 # Some dev-deps are sneaking in for some reason.
 # Remove the ones that pollute the SBOM with vulnerabilities
 RUN rm -r /temp/prod/node_modules/esbuild /temp/prod/node_modules/@esbuild

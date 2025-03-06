@@ -29,6 +29,8 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           build_args: |
             PUBLIC_GITHUB_ORG=navikt
+          build_secrets: |
+            bun_auth_token=${{ secrets.READER_TOKEN }}
 
   deploy:
     name: Deploy to dev-gcp
