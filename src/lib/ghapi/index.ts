@@ -1,4 +1,4 @@
-import { GH_TEAMS_BLIST } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { PUBLIC_GITHUB_ORG } from '$env/static/public';
 import { executeGraphql } from './client';
 import { graphql } from './generated/graphql/index';
@@ -122,7 +122,7 @@ const teamsQuery = graphql(`
 	}
 `);
 
-const BLIST_TEAMS = GH_TEAMS_BLIST.split(',');
+const BLIST_TEAMS = env.GH_TEAMS_BLIST?.split(',');
 
 export const getTeams = async (token: string) => {
 	const res = await executeGraphql({ token }, teamsQuery, {

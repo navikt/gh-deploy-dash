@@ -1,5 +1,4 @@
 import { env } from '$env/dynamic/private';
-import { GH_CLIENT_ID, GH_CLIENT_SECRET } from '$env/static/private';
 import { getDeployments } from '$lib/ghapi/index.js';
 import { createOAuthUserAuth } from '@octokit/auth-oauth-app';
 import { fail } from '@sveltejs/kit';
@@ -39,8 +38,8 @@ export const actions = {
 			: new Octokit({
 					authStrategy: createOAuthUserAuth,
 					auth: {
-						clientId: GH_CLIENT_ID,
-						clientSecret: GH_CLIENT_SECRET,
+						clientId: env.GH_CLIENT_ID,
+						clientSecret: env.GH_CLIENT_SECRET,
 						clientType: 'oauth-app',
 						token
 					}

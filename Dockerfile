@@ -27,7 +27,9 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 ARG PUBLIC_GITHUB_ORG
+ARG GH_TEAMS_BLIST
 ENV PUBLIC_GITHUB_ORG=${PUBLIC_GITHUB_ORG}
+ENV GH_TEAMS_BLIST=${GH_TEAMS_BLIST}
 ENV NODE_ENV=production
 RUN bun run codegen
 RUN bun run build
