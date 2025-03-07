@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	const token = cookies.get('userToken');
-	if (!token) return fail(401);
+	if (!token) fail(401);
 	else {
 		const { teams, errors } = await getTeams(token);
 		return { teams, errors };
