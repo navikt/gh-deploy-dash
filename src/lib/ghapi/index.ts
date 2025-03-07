@@ -60,6 +60,16 @@ export const getDeployments = async (params: Params, token: string) => {
 		team: params.team,
 		org: PUBLIC_GITHUB_ORG
 	});
+	if (res?.errors) {
+		console.error(res?.errors);
+	}
+	if (!res) {
+		return {
+			repositories: [],
+			team: params.team,
+			errors: 'Something went wrong while fetching deployments from GitHub'
+		};
+	}
 	const repositories = res?.data.organization?.team?.repositories;
 
 	const repos = repositories?.nodes?.filter(
