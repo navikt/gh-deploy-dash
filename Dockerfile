@@ -34,6 +34,7 @@ ENV NODE_ENV=production
 
 ENV PROTOCOL_HEADER=x-forwarded-proto
 ENV HOST_HEADER=x-forwarded-host
+ENV ORIGIN=https://gh-deploy-dash.intern.dev.nav.no
 
 RUN bun run codegen
 RUN bun run build
