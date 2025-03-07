@@ -41,7 +41,10 @@
 					repo={repository}
 					owner={PUBLIC_GITHUB_ORG}
 					workflow={Number(getWorkflowFromDeploymentUrl(deployment.url))}
-					success={() => (showReviewModal = false)}
+					success={() => {
+						showReviewModal = false;
+						window.location.reload();
+					}}
 					bind:isMounted={showReviewModal}
 					{isSuccess}
 					{errorMsg}

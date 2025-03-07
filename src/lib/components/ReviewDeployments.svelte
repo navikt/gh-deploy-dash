@@ -40,17 +40,7 @@
 	{:else if $deploymentsQuery.isError}
 		<p>Could not retrieve deployments from GitHub</p>
 	{:else if $deploymentsQuery.isSuccess}
-		<form
-			method="POST"
-			action="?/reviewdeployment"
-			use:enhance={() => {
-				return async ({ result }) => {
-					if (result.type === 'success') {
-						window.location.reload();
-					}
-				};
-			}}
-		>
+		<form method="POST" action="?/reviewdeployment" use:enhance>
 			<input type="hidden" id="owner" name="owner" value={owner} />
 			<input type="hidden" id="repo" name="repo" value={repo} />
 			<input type="hidden" id="run_id" name="run_id" value={workflow} />
