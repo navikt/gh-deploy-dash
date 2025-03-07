@@ -122,7 +122,7 @@ const teamsQuery = graphql(`
 	}
 `);
 
-const BLIST_TEAMS = env.GH_TEAMS_BLIST?.split(',');
+const BLIST_TEAMS = env.GH_TEAMS_BLIST?.split(',') ?? [];
 
 export const getTeams = async (token: string) => {
 	const res = await executeGraphql({ token }, teamsQuery, {
